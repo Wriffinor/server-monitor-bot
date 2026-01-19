@@ -42,11 +42,9 @@ To ensure the monitoring script runs autonomously every minute, you need to set 
 1. **Open the crontab editor:**
   ```bash
   crontab -e
-
-2. **Add the following line (make sure to use absolute paths):**
-  " * * * * * /home/your_user/projects/monitor/venv/bin/python3 /home/your_user/projects/monitor/monitor.py >> /home/your_user/projects/monitor/cron_errors.log 2>&1 "
- * This setup guarantees that the monitoring logic is executed every 60 seconds, even after a system reboot
+2. **Add the following line (use absolute paths):**
+  " * * * * * /home/user_name/projects/monitor/venv/bin/python3 /home/user_name/projects/monitor/monitor.py >> /home/user_name/projects/monitor/cron_errors.log 2>&1 "
 
 ## 📊 Test results
 
-The bot demonstrated high performance, successfully recording and processing node recovery periods with correct timestamp preservation.
+ * The bot demonstrated high performance, successfully recording and processing node recovery periods with correct timestamp preservation.
