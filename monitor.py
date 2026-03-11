@@ -4,23 +4,40 @@ import requests
 import time
 
 from config import TOKEN, CHAT_ID
-SERVERS = ["google.com", "8.8.8.8", "thissitedoesntwork.com"]
-LOG_FILE = "/home/wriffinor/projects/monitor/network_log.txt"
-BASE_PATH = "/home/wriffinor/projects/monitor/"
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+DB_FILE = os.path.join(BASE_DIR, "servers.txt")
+
+SERVERS = []
+def load_servers():
+    if os.path.exists(DB_FILE):
+        with open(DB_FILE, "r") as file:
+            return [line.strip() for line in file.readlines() if line.strip()]
+    return []
+
+SERVERS = load_servers()
+
+LOG_FILE = os.path.join(BASE_DIR, "network_log.txt")
+
+FLAGS_DIR = os.path.join(BASE_DIR, "status_flags")
+
+os.makedirs(FLAGS_DIR, exist_ok=True)
 
 def send_telegram_msg(text):
-    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text={text}"
+    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+    params = {'chat_id': CHAT_ID, 'text': text}
     try:
-        response = requests.get(url)
+        response = requests.get(url, params=params)
         if response.status_code != 200:
             print(f"Telegram API error: {response.text}")
     except Exception as e:
         print(f"Network error when sending: {e}")
 
 def check_server(server):
+    flag_file = os.path.join(FLAGS_DIR, f"{server}_down.txt")
     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     response = os.system(f"ping -c 1 {server} > /dev/null 2>&1")
-    flag_file = f"{BASE_PATH}{server}_down.txt"
 
     if response == 0:
         if os.path.exists(flag_file):
